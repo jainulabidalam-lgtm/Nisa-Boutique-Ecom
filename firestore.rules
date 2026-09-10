@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper functions ────────────────────────────────────────────────────
+
+    // Returns true when the request is authenticated.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Returns true when the authenticated user's uid matches the document uid.
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Returns true when a field is NOT present in the incoming write data,
+    // or when the value is unchanged from the existing document.
+    function fieldNotChanged(field) {
+      return !(field in request.resource.data) ||
+             request.resource.data[field] == resource.data[field];
+    }
+
+    // ─── Users collection ─────────────────────────────────────────────────────
+    //
+    // Document path: users/{uid}
+    //
+    // Intended structure:
+    //   uid          string   — Firebase Auth UID (immutable)
+    //   displayName  string   — editable by owner
+    //   email        string   — editable by owner
+    //   photoURL     string   — editable by owner
+    //   phone        string   — editable by owner
+    //   role         string   — NEVER editable by the user ("customer" | "admin")
+    //   createdAt    string   — set on creation, immutable
+    //   updatedAt    string   — editable by owner
+    //
+    match /users/{uid} {
+
+      // READ: A user may only read their own document.
+      // Admin reads are handled by Firebase Admin SDK (server-side only).
+      allow read: if isOwner(uid);
+
+      // CREATE: Authenticated users may create their own document only.
+      // The role field MUST be "customer" — no other value is accepted.
+      // The uid field MUST equal the authenticated user's uid.
+      allow create: if isOwner(uid)
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.role == "customer";
+
+      // UPDATE: A user may update their own document with the following
+      // restrictions:
+      //   - uid       must not change
+      //   - role      must not change
+      //   - createdAt must not change
+      // Editable fields: displayName, email, photoURL, phone,
+      //                  updatedAt, _serverCreatedAt
+      allow update: if isOwner(uid)
+                    && fieldNotChanged("uid")
+                    && fieldNotChanged("role")
+                    && fieldNotChanged("createdAt");
+
+      // DELETE: Never permitted from the client.
+      // Account deletion must go through a privileged Cloud Function.
+      allow delete: if false;
+    }
+
+    // ─── Default deny ─────────────────────────────────────────────────────────
+    //
+    // Any collection not explicitly matched above (orders, products, etc.)
+    // is denied until explicit rules are added.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
