@@ -6,7 +6,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
-import { db } from "@/lib/firebase/client";
+import { getFirebaseDb } from "@/lib/firebase/client";
 import type { NisaUser } from "@/types/user";
 
 /**
@@ -21,7 +21,7 @@ export async function createUserDocument(
   user: User,
   overrides: Partial<Pick<NisaUser, "displayName">> = {}
 ): Promise<void> {
-  const ref = doc(db, "users", user.uid);
+  const ref = doc(getFirebaseDb(), "users", user.uid);
   const snapshot = await getDoc(ref);
 
   if (!snapshot.exists()) {
@@ -50,7 +50,7 @@ export async function createUserDocument(
  * Returns null if the document does not exist.
  */
 export async function getUserDocument(uid: string): Promise<NisaUser | null> {
-  const ref = doc(db, "users", uid);
+  const ref = doc(getFirebaseDb(), "users", uid);
   const snapshot = await getDoc(ref);
 
   if (!snapshot.exists()) return null;
