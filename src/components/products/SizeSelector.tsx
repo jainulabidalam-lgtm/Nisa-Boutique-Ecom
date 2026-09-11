@@ -31,11 +31,10 @@ export function SizeSelector({
               key={size}
               type="button"
               onClick={() => onSelectSize(size)}
-              className={`min-w-[48px] px-3.5 py-2.5 text-xs font-medium font-sans uppercase tracking-wider transition-all duration-200 cursor-pointer border ${
-                isSelected
-                  ? "bg-[#181818] text-[#f5f1e8] border-[#181818] ring-1 ring-[#c6a15b]"
-                  : "bg-white text-[#181818] border-[#d8cfc0] hover:border-[#181818]"
-              }`}
+              className={`min-w-[48px] px-3.5 py-2.5 text-xs font-medium font-sans uppercase tracking-wider transition-all duration-200 cursor-pointer border ${isSelected
+                ? "bg-[#181818] text-[#f5f1e8] border-[#181818] ring-1 ring-[#c6a15b]"
+                : "bg-white text-[#181818] border-[#d8cfc0] hover:border-[#181818]"
+                }`}
             >
               {size}
             </button>

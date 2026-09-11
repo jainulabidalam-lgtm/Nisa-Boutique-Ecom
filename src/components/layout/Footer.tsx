@@ -74,6 +74,14 @@ export function Footer() {
                   View Full Catalog
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/catalogue"
+                  className="hover:text-[#f5f1e8] transition-colors text-[#c6a15b]"
+                >
+                  Catalogue
+                </Link>
+              </li>
             </ul>
           </div>
 

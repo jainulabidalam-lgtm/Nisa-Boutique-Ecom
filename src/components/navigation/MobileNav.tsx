@@ -115,6 +115,15 @@ export function MobileNav({ isOpen, onClose, onOpenSearch }: MobileNavProps) {
 
             <div className="pt-3">
               <Link
+                href="/catalogue"
+                onClick={onClose}
+                className={`block px-3 py-3 text-xs tracking-[0.2em] uppercase font-semibold border-t border-[#f0ebe1] ${
+                  pathname === "/catalogue" ? "text-[#9f7d39]" : "text-[#181818]"
+                }`}
+              >
+                Catalogue
+              </Link>
+              <Link
                 href="/about"
                 onClick={onClose}
                 className={`block px-3 py-3 text-xs tracking-[0.2em] uppercase font-semibold border-t border-[#f0ebe1] ${

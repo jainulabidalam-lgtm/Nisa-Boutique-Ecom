@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { name: "Handwork", href: "/collections/handwork" },
   { name: "Cotton", href: "/collections/cotton" },
   { name: "Boutique Pieces", href: "/collections/boutique-pieces" },
+  { name: "Catalogue", href: "/catalogue" },
   { name: "EST. 2008", href: "/about" },
 ];
 
