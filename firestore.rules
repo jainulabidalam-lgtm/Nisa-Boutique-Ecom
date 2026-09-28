@@ -22,6 +22,13 @@ service cloud.firestore {
              request.resource.data[field] == resource.data[field];
     }
 
+    // Returns true when the authenticated user has an 'admin' role in Firestore.
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
     // ─── Users collection ─────────────────────────────────────────────────────
     //
     // Document path: users/{uid}
@@ -66,9 +73,31 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ─── Products collection ──────────────────────────────────────────────────
+    //
+    // Document path: products/{productId}
+    //
+    match /products/{productId} {
+      // Public read access for customer catalogue browsing
+      allow read: if true;
+
+      // Only authorized admins may create products with valid metadata
+      allow create: if isAdmin()
+                    && request.resource.data.id == productId
+                    && request.resource.data.name is string
+                    && request.resource.data.price is number
+                    && request.resource.data.price >= 0;
+
+      // Only authorized admins may update products
+      allow update: if isAdmin();
+
+      // Only authorized admins may delete products
+      allow delete: if isAdmin();
+    }
+
     // ─── Default deny ─────────────────────────────────────────────────────────
     //
-    // Any collection not explicitly matched above (orders, products, etc.)
+    // Any collection not explicitly matched above (orders, reviews, etc.)
     // is denied until explicit rules are added.
     match /{document=**} {
       allow read, write: if false;

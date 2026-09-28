@@ -21,10 +21,13 @@ export interface Product {
   categoryName: string;
   sizes: ProductSize[];
   images: string[];
+  cloudinaryPublicIds?: string[];
   available: boolean;
   featured: boolean;
   isNew: boolean;
   badge?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CategoryInfo {
