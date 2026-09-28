@@ -184,7 +184,7 @@ export default function AdminPage() {
                       src={uploadResult.secureUrl}
                       alt="Uploaded preview"
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                   </div>
                   <div className="space-y-2 font-mono text-xs text-[#333333] break-all">

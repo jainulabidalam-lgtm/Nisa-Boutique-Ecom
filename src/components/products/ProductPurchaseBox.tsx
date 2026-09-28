@@ -7,6 +7,7 @@ import { SizeSelector } from "@/components/products/SizeSelector";
 import { QuantitySelector } from "@/components/products/QuantitySelector";
 import { WhatsAppEnquiryButton } from "@/components/products/WhatsAppEnquiryButton";
 import { Button } from "@/components/ui/Button";
+import { ENABLE_CART_AND_CHECKOUT } from "@/lib/config/storeConfig";
 
 interface ProductPurchaseBoxProps {
   product: Product;
@@ -39,36 +40,54 @@ export function ProductPurchaseBox({ product }: ProductPurchaseBoxProps) {
         }}
       />
 
-      {/* Quantity & Actions */}
+      {/* Inquiry & Purchase Actions */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <QuantitySelector
-            quantity={quantity}
-            onDecrease={() => setQuantity(Math.max(1, quantity - 1))}
-            onIncrease={() => setQuantity(quantity + 1)}
-          />
-          <Button
-            variant="primary"
-            size="md"
-            fullWidth
-            onClick={handleAddToCart}
-            disabled={!product.available}
-          >
-            {product.available ? "Add to Boutique Bag" : "Currently Unavailable"}
-          </Button>
-        </div>
+        {ENABLE_CART_AND_CHECKOUT ? (
+          <>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <QuantitySelector
+                quantity={quantity}
+                onDecrease={() => setQuantity(Math.max(1, quantity - 1))}
+                onIncrease={() => setQuantity(quantity + 1)}
+              />
+              <Button
+                variant="primary"
+                size="md"
+                fullWidth
+                onClick={handleAddToCart}
+                disabled={!product.available}
+              >
+                {product.available ? "Add to Boutique Bag" : "Currently Unavailable"}
+              </Button>
+            </div>
 
-        {error && (
-          <p className="text-[#a98235] text-xs font-medium font-sans">
-            {error}
-          </p>
+            {error && (
+              <p className="text-[#a98235] text-xs font-medium font-sans">
+                {error}
+              </p>
+            )}
+
+            <WhatsAppEnquiryButton
+              product={product}
+              size={selectedSize}
+              quantity={quantity}
+              variant="outline"
+            />
+          </>
+        ) : (
+          <div className="space-y-3">
+            <WhatsAppEnquiryButton
+              product={product}
+              size={selectedSize}
+              quantity={quantity}
+              variant="primary"
+              btnSize="md"
+            />
+            <p className="text-[11px] text-center text-[#777777] font-sans">
+              Connect directly with our Kolkata boutique desk on WhatsApp to confirm size fitting, availability &amp; order details.
+            </p>
+          </div>
         )}
-
-        <WhatsAppEnquiryButton
-          product={product}
-          size={selectedSize}
-          quantity={quantity}
-        />
       </div>
 
       {/* Boutique Service Highlights */}

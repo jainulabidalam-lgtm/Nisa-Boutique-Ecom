@@ -28,30 +28,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState<CartItem[]>([
-    // Initial realistic mock cart item for previewing UI immediately
-    {
-      id: "nb-001",
-      product: {
-        id: "nb-001",
-        slug: "zari-embroidered-raw-silk-suit",
-        name: "Zari Embroidered Raw Silk Suit",
-        description: "An opulent 3-piece ensemble featuring rich Korean raw silk in deep charcoal.",
-        details: ["3-Piece ensemble", "Dry clean only"],
-        fabric: "Korean Raw Silk",
-        price: 385,
-        category: "handwork",
-        categoryName: "Handwork Suits",
-        sizes: ["M"],
-        images: ["/images/products/zari-raw-silk-1.svg"],
-        available: true,
-        featured: true,
-        isNew: true,
-      },
-      size: "M",
-      quantity: 1,
-    },
-  ]);
+  const [items, setItems] = useState<CartItem[]>([]);
 
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);

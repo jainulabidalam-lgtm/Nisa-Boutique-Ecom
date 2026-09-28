@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/navigation/MobileNav";
 import { SearchModal } from "@/components/navigation/SearchModal";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { useCart } from "@/context/CartContext";
+import { ENABLE_CART_AND_CHECKOUT } from "@/lib/config/storeConfig";
 
 export function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -68,27 +69,29 @@ export function Header() {
               {/* Account Menu */}
               <AccountMenu />
 
-              {/* Cart Drawer Trigger */}
-              <button
-                type="button"
-                onClick={toggleCart}
-                className="p-2 text-[#181818] hover:text-[#9f7d39] transition-colors relative"
-                aria-label={`View shopping bag (${totalItems} items)`}
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-                {totalItems > 0 && (
-                  <span className="absolute top-1 right-1 -mt-0.5 -mr-0.5 w-4 h-4 bg-[#181818] text-[#c6a15b] text-[9px] font-bold rounded-full flex items-center justify-center border border-[#c6a15b]">
-                    {totalItems}
-                  </span>
-                )}
-              </button>
+              {/* Cart Drawer Trigger (enabled when online checkout is active) */}
+              {ENABLE_CART_AND_CHECKOUT && (
+                <button
+                  type="button"
+                  onClick={toggleCart}
+                  className="p-2 text-[#181818] hover:text-[#9f7d39] transition-colors relative"
+                  aria-label={`View shopping bag (${totalItems} items)`}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    />
+                  </svg>
+                  {totalItems > 0 && (
+                    <span className="absolute top-1 right-1 -mt-0.5 -mr-0.5 w-4 h-4 bg-[#181818] text-[#c6a15b] text-[9px] font-bold rounded-full flex items-center justify-center border border-[#c6a15b]">
+                      {totalItems}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -77,26 +77,26 @@ export function FilterSidebar({ filters, setFilters, availableSizes, className =
         <h3 className="text-xs font-semibold uppercase tracking-widest text-[#181818] mb-4">Price Range</h3>
         <div className="flex items-center gap-2">
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#888888]">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#888888] font-mono text-sm">₹</span>
             <input
               type="number"
               min="0"
               placeholder="Min"
               value={filters.minPrice || ""}
               onChange={(e) => handlePriceChange(e, "min")}
-              className="w-full bg-white border border-[#e5ded0] pl-6 pr-3 py-2 text-sm focus:outline-none focus:border-[#c6a15b]"
+              className="w-full bg-white border border-[#e5ded0] pl-7 pr-3 py-2 text-sm focus:outline-none focus:border-[#c6a15b]"
             />
           </div>
           <span className="text-[#888888]">-</span>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#888888]">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#888888] font-mono text-sm">₹</span>
             <input
               type="number"
               min="0"
               placeholder="Max"
               value={filters.maxPrice || ""}
               onChange={(e) => handlePriceChange(e, "max")}
-              className="w-full bg-white border border-[#e5ded0] pl-6 pr-3 py-2 text-sm focus:outline-none focus:border-[#c6a15b]"
+              className="w-full bg-white border border-[#e5ded0] pl-7 pr-3 py-2 text-sm focus:outline-none focus:border-[#c6a15b]"
             />
           </div>
         </div>

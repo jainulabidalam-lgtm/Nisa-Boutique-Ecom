@@ -8,26 +8,11 @@ import {
   toggleProductAvailability,
   toggleProductFeatured,
 } from "@/lib/firebase/productRepository";
+import { formatINR } from "@/lib/utils/currency";
 
 interface ProductListTableProps {
   products: Product[];
   onProductUpdated: (updatedProduct: Product) => void;
-}
-
-/**
- * Formats an amount into Indian Rupees with Indian numbering formatting.
- * Example: 4500 -> "₹4,500"
- */
-function formatINR(price: number): string {
-  try {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(price);
-  } catch {
-    return `₹${price.toLocaleString("en-IN")}`;
-  }
 }
 
 export function ProductListTable({
@@ -171,7 +156,7 @@ export function ProductListTable({
                           alt={product.name}
                           fill
                           sizes="48px"
-                          className="object-cover"
+                          className="object-contain"
                         />
                       ) : (
                         <span className="text-[10px] uppercase font-mono text-[#888888] text-center px-1">
@@ -316,7 +301,7 @@ export function ProductListTable({
                       alt={product.name}
                       fill
                       sizes="64px"
-                      className="object-cover"
+                      className="object-contain"
                     />
                   ) : (
                     <span className="text-[10px] uppercase font-mono text-[#888888] text-center px-1">

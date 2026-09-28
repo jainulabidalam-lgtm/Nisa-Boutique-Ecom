@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
+import { sanitizeFirestoreData } from "@/lib/firebase/sanitize";
 import type { Product } from "@/types/product";
 
 const PRODUCTS_COLLECTION = "products";
@@ -97,9 +98,10 @@ export async function createProduct(
     _serverUpdatedAt: serverTimestamp(),
   };
 
-  await setDoc(docRef, documentPayload);
+  const sanitizedPayload = sanitizeFirestoreData(documentPayload);
+  await setDoc(docRef, sanitizedPayload);
 
-  return mapDocToProduct(id, documentPayload as Record<string, unknown>);
+  return mapDocToProduct(id, sanitizedPayload as Record<string, unknown>);
 }
 
 /**
@@ -112,11 +114,13 @@ export async function updateProduct(
   const docRef = doc(db, PRODUCTS_COLLECTION, id);
   const now = new Date().toISOString();
 
-  await updateDoc(docRef, {
+  const sanitizedUpdates = sanitizeFirestoreData({
     ...updates,
     updatedAt: now,
     _serverUpdatedAt: serverTimestamp(),
   });
+
+  await updateDoc(docRef, sanitizedUpdates);
 }
 
 /**
@@ -135,11 +139,14 @@ export async function toggleProductAvailability(
   available: boolean
 ): Promise<void> {
   const docRef = doc(db, PRODUCTS_COLLECTION, id);
-  await updateDoc(docRef, {
-    available,
-    updatedAt: new Date().toISOString(),
-    _serverUpdatedAt: serverTimestamp(),
-  });
+  await updateDoc(
+    docRef,
+    sanitizeFirestoreData({
+      available,
+      updatedAt: new Date().toISOString(),
+      _serverUpdatedAt: serverTimestamp(),
+    })
+  );
 }
 
 /**
@@ -150,11 +157,14 @@ export async function toggleProductFeatured(
   featured: boolean
 ): Promise<void> {
   const docRef = doc(db, PRODUCTS_COLLECTION, id);
-  await updateDoc(docRef, {
-    featured,
-    updatedAt: new Date().toISOString(),
-    _serverUpdatedAt: serverTimestamp(),
-  });
+  await updateDoc(
+    docRef,
+    sanitizeFirestoreData({
+      featured,
+      updatedAt: new Date().toISOString(),
+      _serverUpdatedAt: serverTimestamp(),
+    })
+  );
 }
 
 /**

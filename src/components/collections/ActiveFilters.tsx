@@ -1,5 +1,6 @@
 import React from "react";
 import { FilterState } from "@/types/product";
+import { formatINR } from "@/lib/utils/currency";
 
 interface ActiveFiltersProps {
   filters: FilterState;
@@ -56,7 +57,7 @@ export function ActiveFilters({ filters, setFilters }: ActiveFiltersProps) {
 
       {(filters.minPrice > 0 || filters.maxPrice > 0) && (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-[#f5f1e8] text-[#181818] border border-[#e5ded0]">
-          Price: ${filters.minPrice || 0} - ${filters.maxPrice || "Any"}
+          Price: {formatINR(filters.minPrice || 0)} - {filters.maxPrice ? formatINR(filters.maxPrice) : "Any"}
           <button
             onClick={() => setFilters((prev) => ({ ...prev, minPrice: 0, maxPrice: 0 }))}
             className="text-[#999999] hover:text-[#181818]"

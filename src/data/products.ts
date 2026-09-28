@@ -247,3 +247,40 @@ export function getRelatedProducts(currentSlug: string, category: string, limit 
     .filter((p) => p.slug !== currentSlug && p.category === category)
     .slice(0, limit);
 }
+
+/**
+ * Merges Firestore products with fallback/static products.
+ * Firestore products take priority, and items are deduplicated by both ID and slug.
+ */
+export function mergeProducts(
+  firestoreProducts: Product[],
+  fallbackProducts: Product[] = PRODUCTS
+): Product[] {
+  if (!firestoreProducts || firestoreProducts.length === 0) {
+    return fallbackProducts;
+  }
+
+  const seenSlugs = new Set<string>();
+  const seenIds = new Set<string>();
+  const merged: Product[] = [];
+
+  // Firestore products have first priority (including newly created items and admin edits)
+  for (const product of firestoreProducts) {
+    if (product && product.slug && !seenSlugs.has(product.slug) && !seenIds.has(product.id)) {
+      seenSlugs.add(product.slug);
+      seenIds.add(product.id);
+      merged.push(product);
+    }
+  }
+
+  // Include fallback static products if they were not overridden or already in Firestore
+  for (const product of fallbackProducts) {
+    if (product && product.slug && !seenSlugs.has(product.slug) && !seenIds.has(product.id)) {
+      seenSlugs.add(product.slug);
+      seenIds.add(product.id);
+      merged.push(product);
+    }
+  }
+
+  return merged;
+}

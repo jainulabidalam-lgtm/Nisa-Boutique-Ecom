@@ -7,6 +7,7 @@ import {
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { db } from "@/lib/firebase/client";
+import { sanitizeFirestoreData } from "@/lib/firebase/sanitize";
 import type { NisaUser } from "@/types/user";
 
 /**
@@ -37,11 +38,14 @@ export async function createUserDocument(
       updatedAt: now,
     };
 
-    await setDoc(ref, {
-      ...data,
-      // Store a server-side timestamp for accurate ordering in queries
-      _serverCreatedAt: serverTimestamp(),
-    });
+    await setDoc(
+      ref,
+      sanitizeFirestoreData({
+        ...data,
+        // Store a server-side timestamp for accurate ordering in queries
+        _serverCreatedAt: serverTimestamp(),
+      })
+    );
   }
 }
 

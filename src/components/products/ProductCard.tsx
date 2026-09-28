@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/types/product";
 import { Badge } from "@/components/ui/Badge";
+import { formatINR } from "@/lib/utils/currency";
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +11,12 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
+  const primaryImage =
+    Array.isArray(product.images) && product.images.length > 0
+      ? product.images[0]
+      : "/images/products/zari-raw-silk-1.svg";
+  const sizeCount = Array.isArray(product.sizes) ? product.sizes.length : 0;
+
   return (
     <article className="group flex flex-col h-full bg-[#ffffff] border border-[#eee7da] hover:border-[#c6a15b]/60 transition-all duration-300">
       {/* Image Container */}
@@ -20,12 +27,12 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         aria-hidden="true"
       >
         <Image
-          src={product.images[0]}
+          src={primaryImage}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           priority={priority}
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="object-contain transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
         {/* Badges Overlay */}
@@ -62,7 +69,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         <div>
           {/* Category */}
           <p className="text-[10px] sm:text-[11px] font-sans uppercase tracking-[0.2em] text-[#9f7d39] font-medium mb-1">
-            {product.categoryName}
+            {product.categoryName || product.category}
           </p>
 
           {/* Title */}
@@ -73,28 +80,32 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </h3>
 
           {/* Fabric subtitle */}
-          <p className="text-xs text-[#777777] mt-1 line-clamp-1 font-sans">
-            {product.fabric}
-          </p>
+          {product.fabric && (
+            <p className="text-xs text-[#777777] mt-1 line-clamp-1 font-sans">
+              {product.fabric}
+            </p>
+          )}
         </div>
 
         {/* Price & Sizes */}
         <div className="pt-4 mt-4 border-t border-[#eee7da] flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="text-base sm:text-lg font-semibold text-[#181818]">
-              ${product.price}
+            <span className="text-base sm:text-lg font-semibold text-[#181818] font-mono">
+              {formatINR(product.price)}
             </span>
-            {product.originalPrice && (
-              <span className="text-xs text-[#999999] line-through">
-                ${product.originalPrice}
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-xs text-[#999999] line-through font-mono">
+                {formatINR(product.originalPrice)}
               </span>
             )}
           </div>
 
           {/* Available Sizes preview */}
-          <div className="text-[10px] tracking-wider text-[#888888] uppercase font-sans">
-            {product.sizes.length} Sizes
-          </div>
+          {sizeCount > 0 && (
+            <div className="text-[10px] tracking-wider text-[#888888] uppercase font-sans">
+              {sizeCount} {sizeCount === 1 ? "Size" : "Sizes"}
+            </div>
+          )}
         </div>
       </div>
     </article>

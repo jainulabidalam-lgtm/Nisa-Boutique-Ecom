@@ -3,7 +3,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { PRODUCTS } from "@/data/products";
+import { Product } from "@/types/product";
+import { PRODUCTS, mergeProducts } from "@/data/products";
+import { fetchProducts } from "@/lib/firebase/productRepository";
+import { formatINR } from "@/lib/utils/currency";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -12,12 +15,30 @@ interface SearchModalProps {
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState("");
+  const [catalog, setCatalog] = useState<Product[]>(PRODUCTS);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
       document.body.style.overflow = "hidden";
+
+      // Fetch live products when search modal opens
+      let isMounted = true;
+      fetchProducts()
+        .then((firestoreProducts) => {
+          if (isMounted && firestoreProducts.length > 0) {
+            setCatalog(mergeProducts(firestoreProducts, PRODUCTS));
+          }
+        })
+        .catch((err) => {
+          console.warn("Search modal Firestore sync:", err);
+        });
+
+      return () => {
+        isMounted = false;
+        document.body.style.overflow = "unset";
+      };
     } else {
       document.body.style.overflow = "unset";
     }
@@ -46,13 +67,14 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   if (!isOpen) return null;
 
   const results = query.trim()
-    ? PRODUCTS.filter((p) => {
+    ? catalog.filter((p) => {
         const q = query.toLowerCase();
         return (
           p.name.toLowerCase().includes(q) ||
           p.categoryName.toLowerCase().includes(q) ||
           p.fabric.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          p.description.toLowerCase().includes(q) ||
+          (p.tagline && p.tagline.toLowerCase().includes(q))
         );
       })
     : [];
@@ -143,10 +165,14 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   >
                     <div className="relative w-14 h-16 bg-[#181818] shrink-0 overflow-hidden border border-[#e2d8c7]">
                       <Image
-                        src={product.images[0]}
+                        src={
+                          Array.isArray(product.images) && product.images.length > 0
+                            ? product.images[0]
+                            : "/images/products/zari-raw-silk-1.svg"
+                        }
                         alt={product.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -159,7 +185,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       <p className="text-xs text-[#666666] truncate">{product.fabric}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="text-sm font-medium text-[#181818]">${product.price}</span>
+                      <span className="text-sm font-semibold text-[#181818] font-mono">
+                        {formatINR(product.price)}
+                      </span>
                     </div>
                   </Link>
                 ))}

@@ -7,6 +7,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/layout/CartDrawer";
 
+import { PRODUCTION_SITE_ORIGIN } from "@/lib/config/storeConfig";
+
 const playfair = Playfair_Display({
   variable: "--font-serif",
   subsets: ["latin"],
@@ -20,6 +22,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(PRODUCTION_SITE_ORIGIN),
   title: {
     template: "%s | NISA Boutique",
     default: "NISA Boutique | Khidirpur, Kolkata, West Bengal (EST. 2008)",

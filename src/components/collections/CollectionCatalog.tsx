@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Product, FilterState, ProductSize, SortOption } from "@/types/product";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { fetchProducts } from "@/lib/firebase/productRepository";
+import { mergeProducts } from "@/data/products";
 import { FilterSidebar } from "./FilterSidebar";
 import { MobileFilterDrawer } from "./MobileFilterDrawer";
 import { SortDropdown } from "./SortDropdown";
@@ -24,6 +26,7 @@ export function CollectionCatalog({
   categoryDesc,
 }: CollectionCatalogProps) {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   
   const [filters, setFilters] = useState<FilterState>({
     category: categorySlug || "",
@@ -35,8 +38,27 @@ export function CollectionCatalog({
 
   const [sortOption, setSortOption] = useState<SortOption>("featured");
 
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchProducts()
+      .then((firestoreProducts) => {
+        if (isMounted && firestoreProducts.length > 0) {
+          const merged = mergeProducts(firestoreProducts, initialProducts);
+          setProducts(merged);
+        }
+      })
+      .catch((err) => {
+        console.warn("Collection catalogue Firestore sync:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialProducts]);
+
   const filteredProducts = useMemo(() => {
-    let result = [...initialProducts];
+    let result = [...products];
 
     // Filter by Category
     if (filters.category && filters.category !== "all") {
@@ -81,7 +103,7 @@ export function CollectionCatalog({
     }
 
     return result;
-  }, [initialProducts, filters, sortOption]);
+  }, [products, filters, sortOption]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">

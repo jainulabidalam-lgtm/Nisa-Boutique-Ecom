@@ -5,13 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/Button";
+import { formatINR } from "@/lib/utils/currency";
+import { ENABLE_CART_AND_CHECKOUT } from "@/lib/config/storeConfig";
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, removeItem, updateQuantity, subtotal, totalItems } =
     useCart();
 
   useEffect(() => {
-    if (isOpen) {
+    if (ENABLE_CART_AND_CHECKOUT && isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -21,7 +23,7 @@ export function CartDrawer() {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!ENABLE_CART_AND_CHECKOUT || !isOpen) return null;
 
   return (
     <div
@@ -99,7 +101,7 @@ export function CartDrawer() {
                       src={item.product.images[0]}
                       alt={item.product.name}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                   </div>
 
@@ -158,8 +160,8 @@ export function CartDrawer() {
                         </button>
                       </div>
 
-                      <span className="text-sm font-semibold text-[#181818]">
-                        ${item.product.price * item.quantity}
+                      <span className="text-sm font-semibold text-[#181818] font-mono">
+                        {formatINR(item.product.price * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -174,7 +176,7 @@ export function CartDrawer() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-[#666666]">
                   <span>Subtotal</span>
-                  <span className="font-medium text-[#181818]">${subtotal}</span>
+                  <span className="font-medium text-[#181818] font-mono">{formatINR(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-[#888888]">
                   <span>Physical Store Pickup / Delivery</span>
@@ -182,7 +184,7 @@ export function CartDrawer() {
                 </div>
                 <div className="flex justify-between text-base font-serif font-bold text-[#181818] pt-2 border-t border-[#f0ebe1]">
                   <span>Total</span>
-                  <span>${subtotal}</span>
+                  <span className="font-mono">{formatINR(subtotal)}</span>
                 </div>
               </div>
 
@@ -200,7 +202,7 @@ export function CartDrawer() {
                     alert("Frontend Preview: Checkout and payment integration will be configured in the next phase.")
                   }
                 >
-                  Proceed to Checkout &bull; ${subtotal}
+                  Proceed to Checkout &bull; {formatINR(subtotal)}
                 </Button>
                 <Button
                   variant="secondary"
@@ -217,7 +219,7 @@ export function CartDrawer() {
               <div className="pt-2 text-center">
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(
-                    `Hello Nisa Boutique, I would like to inquire about ordering ${totalItems} item(s) from your online catalog totaling $${subtotal}.`
+                    `Hello Nisa Boutique, I would like to inquire about ordering ${totalItems} item(s) from your online catalog totaling ${formatINR(subtotal)}.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

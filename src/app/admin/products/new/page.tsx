@@ -404,7 +404,7 @@ export default function AdminNewProductPage() {
         name: name.trim(),
         tagline: tagline.trim() || undefined,
         description: description.trim(),
-        details: details.filter((d) => d.trim().length > 0),
+        details: details.map((d) => d.trim()).filter((d) => d.length > 0),
         fabric: fabric.trim(),
         careInstructions: careInstructions.trim() || undefined,
         price: Number(price),
@@ -413,7 +413,7 @@ export default function AdminNewProductPage() {
         categoryName,
         sizes: selectedSizes,
         images: secureUrls,
-        cloudinaryPublicIds: publicIds,
+        cloudinaryPublicIds: publicIds.length > 0 ? publicIds : undefined,
         available,
         featured,
         isNew,
@@ -696,7 +696,7 @@ export default function AdminNewProductPage() {
                             alt={`Upload ${idx + 1}`}
                             fill
                             sizes="140px"
-                            className="object-cover"
+                            className="object-contain"
                           />
 
                           {/* Cover Badge on index 0 */}

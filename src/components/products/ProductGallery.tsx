@@ -34,7 +34,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                   src={img}
                   alt={`${productName} thumbnail ${idx + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                 />
               </button>
             );
@@ -50,7 +50,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-opacity duration-300"
+          className="object-contain transition-opacity duration-300"
         />
 
         {/* Indicator badge */}
