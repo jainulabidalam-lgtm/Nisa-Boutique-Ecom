@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Product } from "@/types/product";
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { ProductPurchaseBox } from "@/components/products/ProductPurchaseBox";
@@ -14,11 +15,20 @@ import { getProductBySlug, getRelatedProducts, mergeProducts } from "@/data/prod
 import { formatINR } from "@/lib/utils/currency";
 
 interface ProductDetailViewProps {
-  slug: string;
+  slug?: string;
   initialProduct?: Product | null;
 }
 
-export function ProductDetailView({ slug, initialProduct }: ProductDetailViewProps) {
+export function ProductDetailView({ slug: propSlug, initialProduct }: ProductDetailViewProps) {
+  const params = useParams();
+  const routeSlug =
+    typeof params?.slug === "string"
+      ? params.slug
+      : Array.isArray(params?.slug)
+      ? params.slug[0]
+      : "";
+  const slug = (propSlug || routeSlug || "").trim();
+
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>(() => {
     if (initialProduct) {
@@ -32,6 +42,14 @@ export function ProductDetailView({ slug, initialProduct }: ProductDetailViewPro
     let isMounted = true;
 
     async function loadProductData() {
+      if (!slug) {
+        if (isMounted) {
+          setLoading(false);
+          setProduct(null);
+        }
+        return;
+      }
+
       try {
         // Try fetching the product directly by slug from Firestore
         const liveProduct = await fetchProductBySlug(slug);

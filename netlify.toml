@@ -1,0 +1,31 @@
+# ==============================================================================
+# NISA BOUTIQUE — NETLIFY BUILD & ROUTING CONFIGURATION
+# ==============================================================================
+
+[build]
+  publish = "out"
+  command = "npm run build"
+
+# Dynamic product route SPA fallback
+# Existing pre-rendered HTML files in out/ are served first.
+# Unrendered product slugs fall back to index.html with HTTP 200, allowing
+# Next.js client-side router to fetch live product details from Firestore.
+[[redirects]]
+  from = "/product/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/collections/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,20 @@
+# ==============================================================================
+# NISA BOUTIQUE — NETLIFY ROUTING & REWRITE CONFIGURATION
+# ==============================================================================
+#
+# Static assets and existing pre-rendered HTML files are served first automatically.
+# The rules below serve as SPA fallback rewrites (200 status) for dynamic routes
+# (such as products added via the Admin Portal after a deployment build).
+#
+
+# Product route fallback: enables direct URL visits, hard refreshes, and WhatsApp links
+/product/*    /index.html   200
+
+# Collections route fallback
+/collections/*  /index.html   200
+
+# Admin route fallback
+/admin/*      /index.html   200
+
+# Global single-page application fallback
+/*            /index.html   200
