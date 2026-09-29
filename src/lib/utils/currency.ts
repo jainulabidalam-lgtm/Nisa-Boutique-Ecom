@@ -6,9 +6,12 @@
  * Example: 125000 -> "₹1,25,000"
  */
 
-export function formatINR(amount: number): string {
-  if (typeof amount !== "number" || isNaN(amount)) {
-    return "₹0";
+export function formatINR(amount: number, options?: { allowZero?: boolean }): string {
+  if (typeof amount !== "number" || isNaN(amount) || (!options?.allowZero && amount <= 0)) {
+    if (options?.allowZero && amount === 0) {
+      return "₹0";
+    }
+    return "Price on Request";
   }
 
   try {

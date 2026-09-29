@@ -77,7 +77,7 @@ export function CollectionCatalog({
       result = result.filter((p) => p.price >= filters.minPrice);
     }
     if (filters.maxPrice > 0) {
-      result = result.filter((p) => p.price <= filters.maxPrice);
+      result = result.filter((p) => p.price > 0 && p.price <= filters.maxPrice);
     }
 
     // Filter by Availability
@@ -88,7 +88,12 @@ export function CollectionCatalog({
     // Sorting
     switch (sortOption) {
       case "price-asc":
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => {
+          if (a.price <= 0 && b.price <= 0) return 0;
+          if (a.price <= 0) return 1;
+          if (b.price <= 0) return -1;
+          return a.price - b.price;
+        });
         break;
       case "price-desc":
         result.sort((a, b) => b.price - a.price);

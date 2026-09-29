@@ -93,7 +93,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             <span className="text-base sm:text-lg font-semibold text-[#181818] font-mono">
               {formatINR(product.price)}
             </span>
-            {product.originalPrice && product.originalPrice > product.price && (
+            {product.originalPrice && product.price > 0 && product.originalPrice > product.price && (
               <span className="text-xs text-[#999999] line-through font-mono">
                 {formatINR(product.originalPrice)}
               </span>

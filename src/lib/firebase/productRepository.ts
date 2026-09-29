@@ -17,9 +17,73 @@ import type { Product } from "@/types/product";
 const PRODUCTS_COLLECTION = "products";
 
 /**
+ * Extracts and normalizes image URLs from various possible Firestore document formats.
+ */
+function extractImages(data: Record<string, unknown>): string[] {
+  if (Array.isArray(data.images)) {
+    return data.images
+      .map((item) => {
+        if (typeof item === "string") return item.trim();
+        if (item && typeof item === "object") {
+          if ("url" in item && typeof (item as { url: unknown }).url === "string") {
+            return (item as { url: string }).url.trim();
+          }
+          if ("secure_url" in item && typeof (item as { secure_url: unknown }).secure_url === "string") {
+            return (item as { secure_url: string }).secure_url.trim();
+          }
+          if ("secureUrl" in item && typeof (item as { secureUrl: unknown }).secureUrl === "string") {
+            return (item as { secureUrl: string }).secureUrl.trim();
+          }
+        }
+        return "";
+      })
+      .filter((url) => url.length > 0);
+  }
+  if (typeof data.images === "string" && data.images.trim().length > 0) {
+    return [data.images.trim()];
+  }
+  if (typeof data.image === "string" && data.image.trim().length > 0) {
+    return [data.image.trim()];
+  }
+  if (Array.isArray(data.image)) {
+    return data.image.map(String).map((u) => u.trim()).filter((url) => url.length > 0);
+  }
+  if (typeof data.imageUrl === "string" && data.imageUrl.trim().length > 0) {
+    return [data.imageUrl.trim()];
+  }
+  if (typeof data.secureUrl === "string" && data.secureUrl.trim().length > 0) {
+    return [data.secureUrl.trim()];
+  }
+  return [];
+}
+
+/**
+ * Extracts and normalizes Cloudinary public IDs from Firestore document data.
+ */
+function extractPublicIds(data: Record<string, unknown>): string[] | undefined {
+  if (Array.isArray(data.cloudinaryPublicIds)) {
+    const ids = data.cloudinaryPublicIds
+      .map(String)
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0);
+    return ids.length > 0 ? ids : undefined;
+  }
+  if (typeof data.cloudinaryPublicId === "string" && data.cloudinaryPublicId.trim().length > 0) {
+    return [data.cloudinaryPublicId.trim()];
+  }
+  if (typeof data.publicId === "string" && data.publicId.trim().length > 0) {
+    return [data.publicId.trim()];
+  }
+  return undefined;
+}
+
+/**
  * Normalizes a Firestore document snapshot into a typed Product object.
  */
 function mapDocToProduct(id: string, data: Record<string, unknown>): Product {
+  const images = extractImages(data);
+  const cloudinaryPublicIds = extractPublicIds(data);
+
   return {
     id,
     slug: typeof data.slug === "string" ? data.slug : id,
@@ -37,10 +101,8 @@ function mapDocToProduct(id: string, data: Record<string, unknown>): Product {
     categoryName:
       typeof data.categoryName === "string" ? data.categoryName : "",
     sizes: Array.isArray(data.sizes) ? (data.sizes as Product["sizes"]) : [],
-    images: Array.isArray(data.images) ? data.images.map(String) : [],
-    cloudinaryPublicIds: Array.isArray(data.cloudinaryPublicIds)
-      ? data.cloudinaryPublicIds.map(String)
-      : undefined,
+    images,
+    cloudinaryPublicIds,
     available: Boolean(data.available),
     featured: Boolean(data.featured),
     isNew: Boolean(data.isNew),

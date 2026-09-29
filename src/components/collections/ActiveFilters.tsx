@@ -57,7 +57,7 @@ export function ActiveFilters({ filters, setFilters }: ActiveFiltersProps) {
 
       {(filters.minPrice > 0 || filters.maxPrice > 0) && (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-[#f5f1e8] text-[#181818] border border-[#e5ded0]">
-          Price: {formatINR(filters.minPrice || 0)} - {filters.maxPrice ? formatINR(filters.maxPrice) : "Any"}
+          Price: {formatINR(filters.minPrice || 0, { allowZero: true })} - {filters.maxPrice ? formatINR(filters.maxPrice) : "Any"}
           <button
             onClick={() => setFilters((prev) => ({ ...prev, minPrice: 0, maxPrice: 0 }))}
             className="text-[#999999] hover:text-[#181818]"

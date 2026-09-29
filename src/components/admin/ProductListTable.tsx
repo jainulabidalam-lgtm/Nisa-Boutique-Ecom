@@ -200,7 +200,7 @@ export function ProductListTable({
                     <div className="font-semibold text-[#181818] font-mono text-sm">
                       {formatINR(product.price)}
                     </div>
-                    {product.originalPrice && product.originalPrice > product.price && (
+                    {product.originalPrice && product.price > 0 && product.originalPrice > product.price && (
                       <div className="text-xs text-[#999999] line-through font-mono">
                         {formatINR(product.originalPrice)}
                       </div>

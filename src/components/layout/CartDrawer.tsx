@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/Button";
 import { formatINR } from "@/lib/utils/currency";
 import { ENABLE_CART_AND_CHECKOUT } from "@/lib/config/storeConfig";
+import { BOUTIQUE_WHATSAPP_NUMBER } from "@/lib/utils/whatsapp";
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, removeItem, updateQuantity, subtotal, totalItems } =
@@ -217,16 +218,41 @@ export function CartDrawer() {
 
               {/* WhatsApp direct assist */}
               <div className="pt-2 text-center">
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    `Hello Nisa Boutique, I would like to inquire about ordering ${totalItems} item(s) from your online catalog totaling ${formatINR(subtotal)}.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[11px] text-[#9f7d39] hover:text-[#7d5b2c] tracking-wider uppercase font-medium"
-                >
-                  <span>Order Directly via WhatsApp Boutique Desk &rarr;</span>
-                </a>
+                {(() => {
+                  const normalizedEnvPhone = (
+                    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
+                  ).replace(/\D/g, "");
+                  const boutiquePhone = (BOUTIQUE_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+                  const whatsappRecipient =
+                    normalizedEnvPhone.length > 0 ? normalizedEnvPhone : boutiquePhone;
+
+                  const itemizedLines = items.map(
+                    (it, idx) =>
+                      `${idx + 1}. ${it.product.name} (Size: ${it.size}, Qty: ${it.quantity})`
+                  );
+
+                  const cartMessage = [
+                    `Hello Nisa Boutique, I would like to inquire about ordering ${totalItems} item(s) from your online catalog totaling ${formatINR(subtotal)}:`,
+                    "",
+                    ...itemizedLines,
+                    "",
+                    "Please confirm availability and ordering details.",
+                    "Thank you.",
+                  ].join("\n");
+
+                  return (
+                    <a
+                      href={`https://wa.me/${whatsappRecipient}?text=${encodeURIComponent(
+                        cartMessage
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[11px] text-[#9f7d39] hover:text-[#7d5b2c] tracking-wider uppercase font-medium"
+                    >
+                      <span>Order Directly via WhatsApp Boutique Desk &rarr;</span>
+                    </a>
+                  );
+                })()}
               </div>
             </div>
           )}

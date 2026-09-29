@@ -200,7 +200,7 @@ export function ProductDetailView({ slug: propSlug, initialProduct }: ProductDet
               <span className="text-2xl font-bold text-[#181818] font-mono">
                 {formatINR(product.price)}
               </span>
-              {product.originalPrice && product.originalPrice > product.price && (
+              {product.originalPrice && product.price > 0 && product.originalPrice > product.price && (
                 <span className="text-base text-[#999999] line-through font-mono">
                   {formatINR(product.originalPrice)}
                 </span>

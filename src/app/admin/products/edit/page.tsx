@@ -371,10 +371,8 @@ function AdminEditProductForm() {
 
     // 3. Price
     const numericPrice = Number(price);
-    if (!price || isNaN(numericPrice)) {
-      newErrors.price = "Valid price in Indian Rupees (₹) is required.";
-    } else if (numericPrice < 0) {
-      newErrors.price = "Price must be greater than or equal to 0.";
+    if (!price || isNaN(numericPrice) || numericPrice <= 0) {
+      newErrors.price = "Valid price in Indian Rupees (₹) greater than 0 is required.";
     }
 
     // 4. Original Price
@@ -428,11 +426,25 @@ function AdminEditProductForm() {
     setSubmissionStep("uploading");
     let hasUploadFailure = false;
 
+    const processedItems: Array<{ url: string; publicId?: string }> = [];
+
     for (let i = 0; i < imageList.length; i++) {
       const item = imageList[i];
-      if (item.type !== "new") continue;
 
+      if (item.type === "existing") {
+        processedItems.push({
+          url: item.url,
+          publicId: item.publicId,
+        });
+        continue;
+      }
+
+      // If already uploaded previously
       if (item.uploadedResult) {
+        processedItems.push({
+          url: item.uploadedResult.secureUrl,
+          publicId: item.uploadedResult.publicId,
+        });
         continue;
       }
 
@@ -444,6 +456,12 @@ function AdminEditProductForm() {
 
       try {
         const result = await uploadProductImage(item.file);
+        
+        processedItems.push({
+          url: result.secureUrl,
+          publicId: result.publicId,
+        });
+
         setImageList((prev) =>
           prev.map((it, idx) =>
             idx === i
@@ -485,20 +503,13 @@ function AdminEditProductForm() {
         CATEGORY_OPTIONS.find((c) => c.slug === category)?.name ||
         "Pakistani Suits";
 
-      const finalImageUrls: string[] = [];
-      const finalPublicIds: string[] = [];
+      const finalImageUrls = processedItems
+        .map((p) => p.url.trim())
+        .filter((url) => url.length > 0);
 
-      for (const item of imageList) {
-        if (item.type === "existing") {
-          finalImageUrls.push(item.url);
-          if (item.publicId) finalPublicIds.push(item.publicId);
-        } else if (item.type === "new" && item.uploadedResult) {
-          finalImageUrls.push(item.uploadedResult.secureUrl);
-          if (item.uploadedResult.publicId) {
-            finalPublicIds.push(item.uploadedResult.publicId);
-          }
-        }
-      }
+      const finalPublicIds = processedItems
+        .map((p) => (p.publicId ? p.publicId.trim() : undefined))
+        .filter((id): id is string => typeof id === "string" && id.length > 0);
 
       const updates: Partial<Omit<Product, "id">> = {
         slug: cleanSlug,

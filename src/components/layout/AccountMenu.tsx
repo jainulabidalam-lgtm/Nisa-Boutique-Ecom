@@ -86,7 +86,20 @@ export function AccountMenu() {
           </div>
 
           {/* Menu items */}
-          {/* Account & Orders pages will be added in a future sprint */}
+          {nisaUser?.role === "admin" && (
+            <div className="py-1 border-b border-[#f0ebe2]">
+              <Link
+                href="/admin"
+                id="header-account-admin-link"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-between px-4 py-2.5 text-sm font-sans font-medium text-[#9f7d39] hover:bg-[#fdf9f4] transition-colors"
+              >
+                <span>Admin Dashboard</span>
+                <span className="text-xs uppercase tracking-wider text-[#c6a15b]">Portal &rarr;</span>
+              </Link>
+            </div>
+          )}
 
           <div className="border-t border-[#f0ebe2] mt-1">
             <button
