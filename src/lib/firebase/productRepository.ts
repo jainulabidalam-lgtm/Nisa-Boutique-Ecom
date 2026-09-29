@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   updateDoc,
@@ -168,10 +169,31 @@ export async function toggleProductFeatured(
 }
 
 /**
- * Checks whether a product with the given slug already exists in Firestore.
+ * Fetches a single product by its unique document ID.
+ * Returns null if not found.
  */
-export async function isSlugTaken(slug: string): Promise<boolean> {
+export async function fetchProductById(id: string): Promise<Product | null> {
+  const docRef = doc(db, PRODUCTS_COLLECTION, id);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    return null;
+  }
+
+  return mapDocToProduct(docSnap.id, docSnap.data() as Record<string, unknown>);
+}
+
+/**
+ * Checks whether a product with the given slug already exists in Firestore.
+ * Optionally excludes a specific product ID (useful during edit operations).
+ */
+export async function isSlugTaken(
+  slug: string,
+  excludeId?: string
+): Promise<boolean> {
   const existing = await fetchProductBySlug(slug);
-  return existing !== null;
+  if (!existing) return false;
+  if (excludeId && existing.id === excludeId) return false;
+  return true;
 }
 

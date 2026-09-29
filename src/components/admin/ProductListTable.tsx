@@ -266,7 +266,7 @@ export function ProductListTable({
                   {/* Edit Column */}
                   <td className="py-3 px-4 text-right">
                     <Link
-                      href={`/admin/products/${product.id}/edit`}
+                      href={`/admin/products/edit?id=${encodeURIComponent(product.id)}`}
                       className="inline-flex items-center justify-center px-3 py-1 text-xs uppercase tracking-wider font-semibold border border-[#181818] text-[#181818] hover:bg-[#181818] hover:text-[#f5f1e8] transition-colors rounded-sm"
                     >
                       Edit
@@ -369,7 +369,7 @@ export function ProductListTable({
                 </div>
 
                 <Link
-                  href={`/admin/products/${product.id}/edit`}
+                  href={`/admin/products/edit?id=${encodeURIComponent(product.id)}`}
                   className="px-3 py-1 text-xs uppercase tracking-wider font-semibold border border-[#181818] text-[#181818] hover:bg-[#181818] hover:text-[#f5f1e8] transition-colors rounded-sm"
                 >
                   Edit
